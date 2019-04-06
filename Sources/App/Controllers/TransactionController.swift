@@ -1,8 +1,13 @@
-//
-//  TransactionController.swift
-//  App
-//
-//  Created by user on 06/04/2019.
-//
+import Vapor
 
-import Foundation
+final class TransactionController: RouteCollection {
+    
+    func boot(router: Router) throws {
+        let transactionRoute = router.grouped("api", "transactions")
+        transactionRoute.get(use: getAllHandler)
+    }
+    
+    func getAllHandler(_ req: Request) throws -> Future<[Transaction]> {
+        return Transaction.query(on: req).decode(Transaction.self).all()
+    }
+}
