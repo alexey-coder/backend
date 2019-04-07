@@ -1,5 +1,5 @@
 import Vapor
-import FluentSQLite
+import FluentPostgreSQL
 
 final class User: Codable {
     
@@ -31,6 +31,22 @@ extension User {
     func toPublic() -> User.Public {
         return User.Public(id: id, name: name, username: username)
     }
+    
+    var transactions: Children<User, Transaction> {
+        return children(\.userID)
+    }
+    
+    var creditCards: Children<User, CreditCard> {
+        return children(\.userID)
+    }
+    
+    var reccuringPayments: Children<User, ReccuringPayment> {
+        return children(\.userID)
+    }
+    
+    var accounts: Children<User, Account> {
+        return children(\.userID)
+    }
 }
 
 extension Future where T: User {
@@ -41,7 +57,7 @@ extension Future where T: User {
     }
 }
 
-extension User: SQLiteModel {}
+extension User: PostgreSQLModel {}
 extension User: Migration {}
 extension User: Content {}
 extension User.Public: Content {}

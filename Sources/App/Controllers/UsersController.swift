@@ -10,6 +10,9 @@ final class UsersController: RouteCollection {
         usersRoute.post(use: createHandler)
         usersRoute.put(User.parameter, use: updateHandler)
         usersRoute.delete(User.parameter, use: deleteHandler)
+        
+        usersRoute.get(User.parameter, "transactions", use: getTransactionsHandler)
+        usersRoute.get(User.parameter, "creditcards", use: getCreditCardsHandler)
     }
     
     func getAllHandler(_ req: Request) throws -> Future<[User]> {
@@ -55,5 +58,15 @@ final class UsersController: RouteCollection {
         }
     }
     
+    func getTransactionsHandler(_ req: Request) throws -> Future<[Transaction]> {
+        return try req.parameters.next(User.self).flatMap(to: [Transaction].self) { (user) in
+            return try user.transactions.query(on: req).all()
+        }
+    }
     
+    func getCreditCardsHandler(_ req: Request) throws -> Future<[CreditCard]> {
+        return try req.parameters.next(User.self).flatMap(to: [CreditCard].self) { (user) in
+            return try user.creditCards.query(on: req).all()
+        }
+    }
 }

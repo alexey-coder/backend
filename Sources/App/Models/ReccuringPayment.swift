@@ -1,5 +1,5 @@
 import Vapor
-import FluentSQLite
+import FluentPostgreSQL
 
 final class ReccuringPayment: Codable {
     
@@ -14,6 +14,7 @@ final class ReccuringPayment: Codable {
     var amount: Int
 //    var userFoundsFrom: Account
     var reasonForPayment: String
+    var userID: User.ID
     
     init(customName: String,
          periodicity: String,
@@ -23,7 +24,7 @@ final class ReccuringPayment: Codable {
         beneficiaryBic: String,
         iban: String,
         amount: Int,
-        reasonForPayment: String)
+        reasonForPayment: String, userID: User.ID)
     {
         self.customName = customName
         self.periodicity = periodicity
@@ -34,10 +35,16 @@ final class ReccuringPayment: Codable {
         self.iban = iban
         self.amount = amount
         self.reasonForPayment = reasonForPayment
+        self.userID = userID
     }
 }
 
-extension ReccuringPayment: SQLiteModel {}
+extension ReccuringPayment: PostgreSQLModel {}
 extension ReccuringPayment: Migration {}
 extension ReccuringPayment: Content {}
 extension ReccuringPayment: Parameter {}
+extension ReccuringPayment {
+    var user: Parent<ReccuringPayment, User> {
+        return parent(\.userID)
+    }
+}
