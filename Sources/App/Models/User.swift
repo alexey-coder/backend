@@ -1,35 +1,38 @@
 import Vapor
 import Validation
 import FluentPostgreSQL
+import Authentication
 
 final class User: Codable {
     
     var id: Int?
     var email: String
     var password: String?
-    var tempPassword: String?
     var isNewUser: Bool?
     
-    init(email: String) {
+    init(email: String, password: String) {
         self.email = email
+        self.password = password
     }
     
     final class Public: Codable {
         var id: Int?
         var email: String
-        var tempPassword: String
+        var password: String
+        var isNewUser: Bool
         
-        init(id: Int?, email: String, tempPassword: String) {
+        init(id: Int?, email: String, password: String, isNewUser: Bool) {
             self.id = id
             self.email = email
-            self.tempPassword = tempPassword
+            self.password = password
+            self.isNewUser = isNewUser
         }
     }
 }
 
 extension User {
     func toPublic() -> User.Public {
-        return User.Public(id: id, email: email, tempPassword: tempPassword!)
+        return User.Public(id: id, email: email, password: password!, isNewUser: isNewUser!)
     }
     
     var transactions: Children<User, Transaction> {
@@ -72,6 +75,10 @@ extension User: Validatable {
         try validations.add(\.email, .email)
         return validations
     }
+}
+
+extension User: TokenAuthenticatable {
+    typealias TokenType = Token
 }
 extension User: Content {}
 extension User.Public: Content {}
