@@ -1,5 +1,6 @@
 import Vapor
 import Crypto
+import Validation
 
 final class UsersController: RouteCollection {
   
@@ -23,31 +24,20 @@ final class UsersController: RouteCollection {
         return try req.parameters.next(User.self)
     }
     
-//    func createHandler(_ req: Request) throws -> Future<User> {
-//        return try req.content.decode(User.self).flatMap { (user) in
-//            return user.save(on: req)
-//        }
-//    }
-//
-//    func updateHandler(_ req: Request) throws -> Future<User> {
-//        return try flatMap(to: User.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
-//            user.name = updatedUser.name
-//            user.username = updatedUser.username
-//            return user.save(on: req)
-//        }
-//    }
     func createHandler(_ req: Request) throws -> Future<User> {
-        return try req.content.decode(User.self).flatMap { (user) in
-            user.password = try BCrypt.hash(user.password)
+        return try req.content.decode(User.self).flatMap { user in
+            user.tempPassword = try CryptoRandom().generateData(count: 4).base32EncodedString().lowercased()
+            user.isNewUser = true
+            try user.validate()
             return user.save(on: req)
         }
     }
     
     func updateHandler(_ req: Request) throws -> Future<User> {
         return try flatMap(to: User.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
-            user.name = updatedUser.name
-            user.username = updatedUser.username
-            user.password = try BCrypt.hash(updatedUser.password)
+            user.email = updatedUser.email
+//            user.username = updatedUser.username
+//            user.password = try BCrypt.hash(updatedUser.password)
             return user.save(on: req)
         }
     }
