@@ -69,6 +69,7 @@ extension User: Migration {
         }
     }
 }
+
 extension User: Validatable {
     static func validations() throws -> Validations<User> {
         var validations = Validations(User.self)
@@ -80,6 +81,7 @@ extension User: Validatable {
 extension User: TokenAuthenticatable {
     typealias TokenType = Token
 }
+
 extension User: Content {}
 extension User.Public: Content {}
 extension User: Parameter {}

@@ -5,8 +5,8 @@ import Authentication
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     // Register providers first
-    try services.register(FluentPostgreSQLProvider())
     try services.register(AuthenticationProvider())
+    try services.register(FluentPostgreSQLProvider())
     // Register routes to the router
     let router = EngineRouter.default()
     try routes(router)
@@ -19,7 +19,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(middlewares)
     
     // Configure a SQLite database
-    let config = PostgreSQLDatabaseConfig(hostname: "localhost", port: 5432, username: "user", database: "backend", password: nil, transport: .cleartext)
+    let config = PostgreSQLDatabaseConfig(hostname: "localhost", port: 5432, username: "alexey", database: "backend", password: nil, transport: .cleartext)
     let postgres = PostgreSQLDatabase(config: config)
     var databases = DatabasesConfig()
     databases.add(database: postgres, as: .psql)

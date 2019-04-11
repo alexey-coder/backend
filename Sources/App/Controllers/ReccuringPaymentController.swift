@@ -1,12 +1,16 @@
 import Vapor
+import Authentication
 
 final class ReccuringPaymentController: RouteCollection {
     
     func boot(router: Router) throws {
         let reccuringRoute = router.grouped("api", "reccuring")
-        reccuringRoute.get(use: getAllHandler)
-        reccuringRoute.post(use: createHendler)
-        reccuringRoute.get(ReccuringPayment.parameter, "user", use: getAllHandler)
+        let tokenAuthMiddleware = User.tokenAuthMiddleware()
+        let tokenProtected = reccuringRoute.grouped(tokenAuthMiddleware)
+        
+        tokenProtected.get(use: getAllHandler)
+        tokenProtected.post(use: createHendler)
+        tokenProtected.get(ReccuringPayment.parameter, "user", use: getAllHandler)
     }
     
     func createHendler(_ req: Request) throws -> Future<ReccuringPayment> {

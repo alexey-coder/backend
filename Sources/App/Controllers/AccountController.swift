@@ -4,9 +4,12 @@ final class AccountController: RouteCollection {
     
     func boot(router: Router) throws {
         let accountsRoute = router.grouped("api", "accounts")
-        accountsRoute.get(use: getAllHandler)
-        accountsRoute.get(Account.parameter, "user", use: getUserHandler)
-        accountsRoute.post(use: createHeandler)
+        let tokenAuthMiddleware = User.tokenAuthMiddleware()
+        let tokenProtected = accountsRoute.grouped(tokenAuthMiddleware)
+        
+        tokenProtected.get(use: getAllHandler)
+        tokenProtected.get(Account.parameter, "user", use: getUserHandler)
+        tokenProtected.post(use: createHeandler)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {

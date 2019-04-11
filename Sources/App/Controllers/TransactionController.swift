@@ -1,12 +1,20 @@
 import Vapor
+import Authentication
 
 final class TransactionController: RouteCollection {
     
     func boot(router: Router) throws {
+        
+
+        
         let transactionRoute = router.grouped("api", "transactions")
-        transactionRoute.get(use: getAllHandler)
-        transactionRoute.get(Transaction.parameter, "user", use: getUserHandler)
-        transactionRoute.post(use: createHandler)
+        let tokenAuthMiddleware = User.tokenAuthMiddleware()
+        let tokenProtected = transactionRoute.grouped(tokenAuthMiddleware)
+        
+        
+        tokenProtected.get(use: getAllHandler)
+        tokenProtected.get(Transaction.parameter, "user", use: getUserHandler)
+        tokenProtected.post(use: createHandler)
     }
     
     func createHandler(_ req: Request) throws -> Future<Transaction> {

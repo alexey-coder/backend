@@ -8,6 +8,8 @@ final class UsersController: RouteCollection {
     func boot(router: Router) throws {
 
         let usersRoute = router.grouped("api", "users")
+        usersRoute.post("register", use: register)
+        usersRoute.post("login", use: login)
         
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenProtected = usersRoute.grouped(tokenAuthMiddleware)
@@ -18,13 +20,11 @@ final class UsersController: RouteCollection {
         tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
         tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
         tokenProtected.get("logout", use: logout)
-        
-        usersRoute.post("register", use: register)
-        usersRoute.post("login", use: login)
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
         return try req.content.decode(User.self).flatMap { user in
+            try user.validate()
             let tempPass = try CryptoRandom().generateData(count: 4).base32EncodedString().lowercased()
             
             let hasher = try req.make(BCryptDigest.self)
@@ -79,15 +79,6 @@ final class UsersController: RouteCollection {
     func getOneHandler(_ req: Request) throws -> Future<User> {
         return try req.parameters.next(User.self)
     }
-    
-//    func createHandler(_ req: Request) throws -> Future<User> {
-//        return try req.content.decode(User.self).flatMap { user in
-//            user.password = try CryptoRandom().generateData(count: 4).base32EncodedString().lowercased()
-//            user.isNewUser = true
-//            try user.validate()
-//            return user.save(on: req)
-//        }
-//    }
     
     func updateHandler(_ req: Request) throws -> Future<User> {
         return try flatMap(to: User.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
