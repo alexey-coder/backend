@@ -2,6 +2,7 @@ import Vapor
 import Crypto
 import Validation
 import Authentication
+import FluentPostgreSQL
 
 final class UsersController: RouteCollection {
   
@@ -19,6 +20,8 @@ final class UsersController: RouteCollection {
         tokenProtected.delete(User.parameter, use: deleteHandler)
         tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
         tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
+        tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
+        tokenProtected.get(User.parameter, "accounts", use: getAccountsHeandler)
         tokenProtected.get("logout", use: logout)
     }
     
@@ -102,8 +105,20 @@ final class UsersController: RouteCollection {
     }
     
     func getCreditCardsHandler(_ req: Request) throws -> Future<[CreditCard]> {
-        return try req.parameters.next(User.self).flatMap(to: [CreditCard].self) { (user) in
+        return try req.parameters.next(User.self).flatMap(to: [CreditCard].self) { user in
             return try user.creditCards.query(on: req).all()
+        }
+    }
+    
+    func getCreditReccuringPaymentsHandler(_ req: Request) throws -> Future<[ReccuringPayment]> {
+        return try req.parameters.next(User.self).flatMap(to: [ReccuringPayment].self) { user in
+            return try user.reccuringPayments.query(on: req).all()
+        }
+    }
+    
+    func getAccountsHeandler(_ req: Request) throws -> Future<[Account]> {
+        return try req.parameters.next(User.self).flatMap(to: [Account].self) { user in
+            return try user.accounts.query(on: req).all()
         }
     }
 }

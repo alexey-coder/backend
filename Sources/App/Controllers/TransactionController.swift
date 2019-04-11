@@ -8,7 +8,7 @@ final class TransactionController: RouteCollection {
 
         
         let transactionRoute = router.grouped("api", "transactions")
-        let tokenAuthMiddleware = User.tokenAuthMiddleware()
+        let tokenAuthMiddleware = User.tokenAuthMiddleware() //User?somehow
         let tokenProtected = transactionRoute.grouped(tokenAuthMiddleware)
         
         

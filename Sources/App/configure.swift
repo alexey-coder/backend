@@ -7,6 +7,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Register providers first
     try services.register(AuthenticationProvider())
     try services.register(FluentPostgreSQLProvider())
+    
     // Register routes to the router
     let router = EngineRouter.default()
     try routes(router)
@@ -14,12 +15,18 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     // Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
-    // middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
     
     // Configure a SQLite database
-    let config = PostgreSQLDatabaseConfig(hostname: "localhost", port: 5432, username: "alexey", database: "backend", password: nil, transport: .cleartext)
+    let config = PostgreSQLDatabaseConfig(
+        hostname: "localhost",
+        port: 5432,
+        username: "alexey",
+        database: "backend",
+        password: nil,
+        transport: .cleartext)
+    
     let postgres = PostgreSQLDatabase(config: config)
     var databases = DatabasesConfig()
     databases.add(database: postgres, as: .psql)
