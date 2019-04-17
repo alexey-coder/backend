@@ -27,7 +27,6 @@ final class ReccuringPaymentController: RouteCollection {
     func getUserHeandler(_ req: Request) throws -> Future<User.Public> {
         return try req.parameters.next(ReccuringPayment.self).flatMap(to: User.Public.self) { payment in
             return payment.user.get(on: req).toPublic()
-            
         }
     }
 }

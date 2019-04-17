@@ -43,4 +43,3 @@ extension Token: Authentication.Token {
         return \Token.userID
     }
 }
-

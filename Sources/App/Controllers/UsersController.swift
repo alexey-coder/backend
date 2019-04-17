@@ -12,8 +12,9 @@ final class UsersController: RouteCollection {
         usersRoute.post("register", use: register)
         usersRoute.post("login", use: login)
         
+        let guardAuthMiddleware = User.guardAuthMiddleware() //
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
-        let tokenProtected = usersRoute.grouped(tokenAuthMiddleware)
+        let tokenProtected = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(User.parameter, use: getOneHandler)
         tokenProtected.put(User.parameter, use: updateHandler)
