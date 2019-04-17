@@ -5,8 +5,9 @@ final class ReccuringPaymentController: RouteCollection {
     
     func boot(router: Router) throws {
         let reccuringRoute = router.grouped("api", "reccuring")
+        let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
-        let tokenProtected = reccuringRoute.grouped(tokenAuthMiddleware)
+        let tokenProtected = reccuringRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenProtected.get(use: getAllHandler)
         tokenProtected.post(use: createHendler)

@@ -14,7 +14,6 @@ final class Transaction: Codable {
         self.userID = userID
     }
 }
-
 extension Transaction: PostgreSQLModel {}
 extension Transaction: Migration {}
 extension Transaction: Content {}

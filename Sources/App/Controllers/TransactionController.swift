@@ -6,8 +6,10 @@ final class TransactionController: RouteCollection {
     func boot(router: Router) throws {
         
         let transactionRoute = router.grouped("api", "transactions")
-        let tokenAuthMiddleware = User.tokenAuthMiddleware() //User?somehow
-        let tokenProtected = transactionRoute.grouped(tokenAuthMiddleware)
+        
+        let guardAuthMiddleware = User.guardAuthMiddleware()
+        let tokenAuthMiddleware = User.tokenAuthMiddleware()
+        let tokenProtected = transactionRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(Transaction.parameter, "user", use: getUserHandler)

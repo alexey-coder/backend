@@ -4,8 +4,9 @@ final class AccountController: RouteCollection {
     
     func boot(router: Router) throws {
         let accountsRoute = router.grouped("api", "accounts")
+        let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
-        let tokenProtected = accountsRoute.grouped(tokenAuthMiddleware)
+        let tokenProtected = accountsRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(Account.parameter, "user", use: getUserHandler)

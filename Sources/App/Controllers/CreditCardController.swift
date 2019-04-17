@@ -5,8 +5,9 @@ final class CreditCardController: RouteCollection {
     
     func boot(router: Router) throws {
         let creditcardsRoute = router.grouped("api", "creditcards")
+        let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
-        let tokenProtected = creditcardsRoute.grouped(tokenAuthMiddleware)
+        let tokenProtected = creditcardsRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(CreditCard.parameter, "user", use: getUserHandler)

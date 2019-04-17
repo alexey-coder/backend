@@ -40,5 +40,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     migrations.add(model: ReccuringPayment.self, database: .psql)
     migrations.add(model: Transaction.self, database: .psql)
     migrations.add(model: Token.self, database: .psql)
+    migrations.add(model: Currency.self, database: .psql)
+    migrations.add(model: Periodicity.self, database: .psql)
     services.register(migrations)
 }

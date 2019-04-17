@@ -15,16 +15,21 @@ final class ReccuringPayment: Codable {
 //    var userFoundsFrom: Account
     var reasonForPayment: String
     var userID: User.ID
+    var periodicityID: Periodicity.ID
+    var accountID: Account.ID
     
     init(customName: String,
-         periodicity: String,
+        periodicity: String,
         paymentDay: String,
         beneficiaryName: String,
         beneficiaryBank: String,
         beneficiaryBic: String,
         iban: String,
         amount: Int,
-        reasonForPayment: String, userID: User.ID)
+        reasonForPayment: String,
+        userID: User.ID,
+        periodicityID: Periodicity.ID,
+        accountID: Account.ID)
     {
         self.customName = customName
         self.periodicity = periodicity
@@ -36,6 +41,8 @@ final class ReccuringPayment: Codable {
         self.amount = amount
         self.reasonForPayment = reasonForPayment
         self.userID = userID
+        self.periodicityID = periodicityID
+        self.accountID = accountID
     }
 }
 
@@ -46,5 +53,13 @@ extension ReccuringPayment: Parameter {}
 extension ReccuringPayment {
     var user: Parent<ReccuringPayment, User> {
         return parent(\.userID)
+    }
+    
+    var periodicy: Children<ReccuringPayment, Periodicity> {
+        return children(\.reccuringID)
+    }
+    
+    var userFoundsFrom: Parent<ReccuringPayment, Account> {
+        return parent(\.accountID)
     }
 }
