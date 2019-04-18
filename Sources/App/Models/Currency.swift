@@ -12,21 +12,22 @@ final class Currency: Codable {
     var id: Int?
     var name: String
     var image: String
-    var userID: User.ID
+//    var accountID: Account.ID
     
-    init(id: Int, name: String, image: String, userID: User.ID) {
-        self.id = id
+    init( name: String, image: String
+//        , accountID: Account.ID
+        ) {
         self.name = name
         self.image = image
-        self.userID = userID
+//        self.accountID = accountID
     }
 }
 extension Currency: PostgreSQLModel {}
 extension Currency: Content {}
 extension Currency: Parameter {}
 extension Currency: Migration {}
-extension Currency {
-    var account: Parent<Currency, Account> {
-        return parent(\.userID)
-    }
-}
+//extension Currency {
+//    var account: Parent<Currency, Account> {
+//        return parent(\.accountID)
+//    }
+//}

@@ -24,7 +24,7 @@ extension Account {
     }
 
     var currency: Children<Account, Currency> {
-        return children(\.userID)
+        return children(\Currency.id)
     }
     
     var recuuringPayment: Children<Account, ReccuringPayment> {

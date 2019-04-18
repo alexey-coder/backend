@@ -11,6 +11,8 @@ final class AccountController: RouteCollection {
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(Account.parameter, "user", use: getUserHandler)
         tokenProtected.post(use: createHeandler)
+        tokenProtected.delete(Account.parameter, use: deleteHandler)
+
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {
@@ -27,6 +29,12 @@ final class AccountController: RouteCollection {
     func getUserHandler(_ req: Request) throws -> Future<User.Public> {
         return try req.parameters.next(Account.self).flatMap(to: User.Public.self) { account in
             return account.user.get(on: req).toPublic()
+        }
+    }
+    
+    func deleteHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.parameters.next(Account.self).flatMap { (user) in
+            return user.delete(on: req).transform(to: HTTPStatus.noContent)
         }
     }
 }

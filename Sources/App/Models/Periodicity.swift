@@ -11,11 +11,13 @@ import FluentPostgreSQL
 final class Periodicity: Codable {
     var id: Int?
     var periodicity: String
-    var reccuringID: ReccuringPayment.ID
+//    var reccuringID: ReccuringPayment.ID
     
-    init( periodicity: String, reccuringID: ReccuringPayment.ID) {
+    init( periodicity: String
+//        , reccuringID: ReccuringPayment.ID
+        ) {
         self.periodicity = periodicity
-        self.reccuringID = reccuringID
+//        self.reccuringID = reccuringID
     }
 }
 
@@ -23,8 +25,8 @@ extension Periodicity: PostgreSQLModel {}
 extension Periodicity: Content {}
 extension Periodicity: Parameter {}
 extension Periodicity: Migration {}
-extension Periodicity {
-    var reccuringPayment: Parent<Periodicity, ReccuringPayment> {
-        return parent(\.reccuringID)
-    }
-}
+//extension Periodicity {
+//    var reccuringPayment: Parent<Periodicity, ReccuringPayment> {
+//        return parent(\.reccuringID)
+//    }
+//}

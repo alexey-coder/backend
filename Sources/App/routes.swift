@@ -21,8 +21,8 @@ public func routes(_ router: Router) throws {
     let currencyController = CurrencyController()
     try router.register(collection: currencyController)
     
-//    let periodicityController = PeriodicityController()
-//    try router.register(collection: periodicityController)
+    let periodicityController = PeriodicityController()
+    try router.register(collection: periodicityController)
     
 
 //    router.get("periodicity") { req -> [Periodicity] in

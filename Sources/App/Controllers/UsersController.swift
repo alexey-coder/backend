@@ -17,7 +17,7 @@ final class UsersController: RouteCollection {
         let tokenProtected = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(User.parameter, use: getOneHandler)
-        tokenProtected.put(User.parameter, use: updateHandler)
+        tokenProtected.put(User.parameter, use: updatePasswordHandler)
         tokenProtected.delete(User.parameter, use: deleteHandler)
         tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
         tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
@@ -84,12 +84,15 @@ final class UsersController: RouteCollection {
         return try req.parameters.next(User.self)
     }
     
-    func updateHandler(_ req: Request) throws -> Future<User> {
-        return try flatMap(to: User.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
-            user.email = updatedUser.email
-//            user.username = updatedUser.username
-//            user.password = try BCrypt.hash(updatedUser.password)
-            return user.save(on: req)
+    func updatePasswordHandler(_ req: Request) throws -> Future<User.Public> {
+        return try flatMap(to: User.Public.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
+            let hasher = try req.make(BCryptDigest.self)
+            let passwordHashed = try hasher.hash(updatedUser.password!)
+            user.password = passwordHashed
+//            return user.save(on: req)
+            return user.save(on: req).map { storedUser in
+                return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: passwordHashed , isNewUser: false)
+            }
         }
     }
     

@@ -13,7 +13,6 @@ final class Token: Codable {
         self.userID = userID
     }
 }
-
 extension Token: PostgreSQLModel {}
 extension Token: Migration {}
 extension Token: Content {}
