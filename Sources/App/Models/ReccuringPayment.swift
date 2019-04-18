@@ -12,7 +12,6 @@ final class ReccuringPayment: Codable {
     var beneficiaryBic: String
     var iban: String
     var amount: Int
-//    var userFoundsFrom: Account
     var reasonForPayment: String
     var userID: User.ID
     var periodicityID: Periodicity.ID

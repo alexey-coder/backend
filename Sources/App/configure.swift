@@ -4,7 +4,6 @@ import Authentication
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
-    // Register providers first
     try services.register(AuthenticationProvider())
     try services.register(FluentPostgreSQLProvider())
     
@@ -14,11 +13,10 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(router, as: Router.self)
 
     // Register middleware
-    var middlewares = MiddlewareConfig() // Create _empty_ middleware config
+    var middlewares = MiddlewareConfig()
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
     
-    // Configure a SQLite database
     let config = PostgreSQLDatabaseConfig(
         hostname: "localhost",
         port: 5432,
@@ -32,7 +30,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     databases.add(database: postgres, as: .psql)
     services.register(databases)
     
-    // Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: User.self, database: .psql)
     migrations.add(model: Account.self, database: .psql)
