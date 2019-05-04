@@ -13,16 +13,16 @@ final class PopulateCurrency: Migration {
     typealias Database = PostgreSQLDatabase
     
     static let currencyNames = [
-        "us",
-        "eu",
-        "gbp",
-        "shf"
+        Currency(name: "us", image: "Public/Flags/us.pdf"),
+        Currency(name: "eu", image: "Public/Flags/eu.pdf"),
+        Currency(name: "gbp", image: "Public/Flags/gbp.pdf"),
+        Currency(name: "shf", image: "Public/Flags/shf.pdf")
     ]
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {
         
         let futures = currencyNames.map { currency in
-            return Currency(name: currency, image: "ds").create(on: connection).map(to: Void.self) { _ in return }
+            return Currency(name: currency.name, image: currency.image).create(on: connection).map(to: Void.self) { _ in return }
         }
         return Future<Void>.andAll(futures, eventLoop: connection.eventLoop)
     }
@@ -30,7 +30,7 @@ final class PopulateCurrency: Migration {
     static func revert(on connection: PostgreSQLConnection) -> Future<Void> {
         
         let futures = currencyNames.map { currency in
-            return Currency.query(on: connection).filter(\Currency.name == currency).delete()
+            return Currency.query(on: connection).filter(\Currency.name == currency.name).delete()
         }
         return Future<Void>.andAll(futures, eventLoop: connection.eventLoop)
     }

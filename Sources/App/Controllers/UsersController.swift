@@ -19,11 +19,18 @@ final class UsersController: RouteCollection {
         tokenProtected.get(User.parameter, use: getOneHandler)
         tokenProtected.put(User.parameter, use: updatePasswordHandler)
         tokenProtected.delete(User.parameter, use: deleteHandler)
-        tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
-        tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
-        tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
-        tokenProtected.get(User.parameter, "accounts", use: getAccountsHeandler)
+//        tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
+//        tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
+//        tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
+//        tokenProtected.get(User.parameter, "accounts", use: getAccountsHeandler)
+                usersRoute.get(User.parameter, "transactions", use: getTransactionsHandler)
+                usersRoute.get(User.parameter, "creditcards", use: getCreditCardsHandler)
+                usersRoute.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
+                usersRoute.get(User.parameter, "accounts", use: getAccountsHeandler)
+
         tokenProtected.get("logout", use: logout)
+        
+         usersRoute.post(User.parameter, "avatar", use: uploadUser) //protect it
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {
@@ -33,8 +40,8 @@ final class UsersController: RouteCollection {
             
             let hasher = try req.make(BCryptDigest.self)
             let passwordHashed = try hasher.hash(tempPass)
-            
-            let newUser = User(email: user.email, password: passwordHashed)
+
+            let newUser = User(email: user.email, password: passwordHashed, surname: user.surname, dayOfBirth: user.dayOfBirth, cityOfBirth: user.cityOfBirth, countryOfBirth: user.countryOfBirth, postalCode: user.postalCode, postAddress: user.postAddress, postCity: user.postCity, postCountry: user.postCountry, phone: user.phone)
             newUser.isNewUser = true
             return newUser.save(on: req).map { storedUser in
                 return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: tempPass , isNewUser: storedUser.isNewUser!)
@@ -89,7 +96,6 @@ final class UsersController: RouteCollection {
             let hasher = try req.make(BCryptDigest.self)
             let passwordHashed = try hasher.hash(updatedUser.password!)
             user.password = passwordHashed
-//            return user.save(on: req)
             return user.save(on: req).map { storedUser in
                 return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: passwordHashed , isNewUser: false)
             }
@@ -125,4 +131,27 @@ final class UsersController: RouteCollection {
             return try user.accounts.query(on: req).all()
         }
     }
+    
+    func uploadUser(_ req: Request) throws -> Future<HTTPStatus> {
+        let directory = DirectoryConfig.detect()
+        let workPath = directory.workDir
+        let name = UUID().uuidString + ".jpg"
+        let imageFolder = "Public/Avatars"
+        let saveURL = URL(fileURLWithPath: workPath).appendingPathComponent(imageFolder, isDirectory: true).appendingPathComponent(name, isDirectory: false)
+        
+        return try req.content.decode(FileContent.self).map { payload in
+            do {
+                try payload.file.data.write(to: saveURL)
+                print("payload: \(payload)")
+                return .ok
+            } catch {
+                print("error: \(error)")
+                throw Abort(.internalServerError, reason: "Unable to write multipart form data to file. Underlying error \(error)")
+            }
+        }
+    }
+}
+
+struct FileContent: Content { //remove me
+    var file: File
 }

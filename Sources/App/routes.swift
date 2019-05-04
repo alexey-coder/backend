@@ -24,6 +24,13 @@ public func routes(_ router: Router) throws {
     let periodicityController = PeriodicityController()
     try router.register(collection: periodicityController)
     
+    
+//    func upload(_ req: Request) throws -> Future<String> {
+//        return try req.content.decode(File.self).map(to: String.self) { (file) in
+//            try file.data.write(to: URL(fileURLWithPath: "/Users/eivindml/Desktop/\(file.filename)"))
+//            return "File uploaded"
+//        }
+//    }
 
 //    router.get("periodicity") { req -> [Periodicity] in
 //        let resp = [Periodicity(id: 1, periodicity: "daily"),

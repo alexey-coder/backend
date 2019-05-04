@@ -9,10 +9,46 @@ final class User: Codable {
     var email: String
     var password: String?
     var isNewUser: Bool?
+    var surname: String
+    var dayOfBirth: String
+    var cityOfBirth: String
+    var countryOfBirth: String
+    var postalCode: String
+    var postAddress: String
+    var postCity: String
+    var postCountry: String
+//    var cardImage: File
+//    var billImage: File
+    var phone: String
+    var avatar: File?
     
-    init(email: String, password: String) {
+    init(email: String,
+         password: String,
+         surname: String,
+         dayOfBirth: String,
+         cityOfBirth: String,
+         countryOfBirth: String,
+         postalCode: String,
+         postAddress: String,
+         postCity: String,
+         postCountry: String,
+//         cardImage: File,
+//         billImage: File,
+         phone: String)
+    {
         self.email = email
         self.password = password
+        self.surname = surname
+        self.dayOfBirth = dayOfBirth
+        self.cityOfBirth = cityOfBirth
+        self.countryOfBirth = countryOfBirth
+        self.postalCode = postalCode
+        self.postAddress = postAddress
+        self.postCity = postCity
+        self.postCountry = postCountry
+//        self.cardImage = cardImage
+//        self.billImage = billImage
+        self.phone = phone
     }
     
     final class Public: Codable {
@@ -21,7 +57,12 @@ final class User: Codable {
         var password: String
         var isNewUser: Bool
         
-        init(id: Int?, email: String, password: String, isNewUser: Bool) {
+        
+        init(id: Int?,
+             email: String,
+             password: String,
+             isNewUser: Bool)
+        {
             self.id = id
             self.email = email
             self.password = password

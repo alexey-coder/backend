@@ -1,4 +1,5 @@
 import Vapor
+import FluentPostgreSQL
 
 final class AccountController: RouteCollection {
     
@@ -12,7 +13,7 @@ final class AccountController: RouteCollection {
         tokenProtected.get(Account.parameter, "user", use: getUserHandler)
         tokenProtected.post(use: createHeandler)
         tokenProtected.delete(Account.parameter, use: deleteHandler)
-
+        tokenProtected.put(Account.parameter, use: updateHandler)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {
@@ -29,6 +30,13 @@ final class AccountController: RouteCollection {
     func getUserHandler(_ req: Request) throws -> Future<User.Public> {
         return try req.parameters.next(Account.self).flatMap(to: User.Public.self) { account in
             return account.user.get(on: req).toPublic()
+        }
+    }
+    
+    func updateHandler(_ req: Request) throws -> Future<Account> {
+        return try flatMap(to: Account.self, req.parameters.next(Account.self), req.content.decode(Account.self)) { (account, updatedAccount) in
+            account.customName = updatedAccount.customName
+            return account.save(on: req)
         }
     }
     
