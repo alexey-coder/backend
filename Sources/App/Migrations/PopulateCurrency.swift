@@ -13,10 +13,10 @@ final class PopulateCurrency: Migration {
     typealias Database = PostgreSQLDatabase
     
     static let currencyNames = [
-        Currency(name: "us", image: "Public/Flags/us.pdf"),
-        Currency(name: "eu", image: "Public/Flags/eu.pdf"),
-        Currency(name: "gbp", image: "Public/Flags/gbp.pdf"),
-        Currency(name: "shf", image: "Public/Flags/shf.pdf")
+        Currency(name: "us", image: "/Flags/us.pdf"),
+        Currency(name: "eu", image: "/Flags/eu.pdf"),
+        Currency(name: "gbp", image: "/Flags/gbp.pdf"),
+        Currency(name: "shf", image: "/Flags/shf.pdf")
     ]
     
     static func prepare(on connection: PostgreSQLConnection) -> Future<Void> {

@@ -7,7 +7,7 @@ final class Transaction: Codable {
     var iban: String
     var amount: Int
     var userID: User.ID
-    
+
     init(iban: String, amount: Int, userID: User.ID) {
         self.iban = iban
         self.amount = amount

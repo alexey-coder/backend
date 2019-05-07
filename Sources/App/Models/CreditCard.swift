@@ -9,13 +9,15 @@ final class CreditCard: Codable {
     var city: String
     var country: String
     var userID: User.ID
+    var accountID: Account.ID
     
-    init(postalCode: String, address: String, city: String, country: String, userID: User.ID ) {
+    init(postalCode: String, address: String, city: String, country: String, userID: User.ID, accountID: Account.ID) {
         self.postalCode = postalCode
         self.address = address
         self.city = city
         self.country = country
         self.userID = userID
+        self.accountID = accountID
     }
 }
 
@@ -26,5 +28,9 @@ extension CreditCard: Parameter {}
 extension CreditCard {
     var user: Parent<CreditCard, User> {
         return parent(\.userID)
+    }
+    
+    var account: Parent<CreditCard, Account> {
+        return parent(\.accountID)
     }
 }

@@ -10,8 +10,10 @@ final class CreditCardController: RouteCollection {
         let tokenProtected = creditcardsRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         tokenProtected.get(use: getAllHandler)
-        tokenProtected.get(CreditCard.parameter, "user", use: getUserHandler)
-        tokenProtected.post(use: createHeandler)
+//        tokenProtected.get(CreditCard.parameter, "user", use: getUserHandler)
+        creditcardsRoute.get(CreditCard.parameter, "user", use: getUserHandler)
+//        tokenProtected.post(use: createHeandler)
+        creditcardsRoute.post(use: createHeandler)
         
     }
     

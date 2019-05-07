@@ -7,10 +7,12 @@ final class Account: Codable {
     var id: Int?
     var customName: String
     var userID: User.ID
+    var currencyID: Currency.ID
     
-    init(customName: String, userID: User.ID) {
+    init(customName: String, userID: User.ID, currencyID: Currency.ID) {
         self.customName = customName
         self.userID = userID
+        self.currencyID = currencyID
     }
 }
 
@@ -24,11 +26,15 @@ extension Account {
     }
 
     var currency: Children<Account, Currency> {
-        return children(\Currency.id)
+        return children(\.id)
     }
     
     var recuuringPayment: Children<Account, ReccuringPayment> {
         return children(\.accountID)
+    }
+    
+    var card: Children<Account, CreditCard> {
+        return children(\CreditCard.id)
     }
 }
 

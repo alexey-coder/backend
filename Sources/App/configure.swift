@@ -21,7 +21,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     let config = PostgreSQLDatabaseConfig(
         hostname: "localhost",
         port: 5432,
-        username: "alexey",
+        username: "user",
         database: "backend",
         password: nil,
         transport: .cleartext)
