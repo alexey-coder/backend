@@ -8,7 +8,6 @@ final class User: Codable {
     var id: Int?
     var email: String
     var password: String?
-    var isNewUser: Bool?
     var surname: String
     var dayOfBirth: String
     var cityOfBirth: String
@@ -17,10 +16,7 @@ final class User: Codable {
     var postAddress: String
     var postCity: String
     var postCountry: String
-//    var cardImage: File
-//    var billImage: File
     var phone: String
-    var avatar: File?
     
     init(email: String,
          password: String,
@@ -32,8 +28,6 @@ final class User: Codable {
          postAddress: String,
          postCity: String,
          postCountry: String,
-//         cardImage: File,
-//         billImage: File,
          phone: String)
     {
         self.email = email
@@ -46,8 +40,6 @@ final class User: Codable {
         self.postAddress = postAddress
         self.postCity = postCity
         self.postCountry = postCountry
-//        self.cardImage = cardImage
-//        self.billImage = billImage
         self.phone = phone
     }
     
@@ -55,25 +47,21 @@ final class User: Codable {
         var id: Int?
         var email: String
         var password: String
-        var isNewUser: Bool
-        
         
         init(id: Int?,
              email: String,
-             password: String,
-             isNewUser: Bool)
+             password: String)
         {
             self.id = id
             self.email = email
             self.password = password
-            self.isNewUser = isNewUser
         }
     }
 }
 
 extension User {
     func toPublic() -> User.Public {
-        return User.Public(id: id, email: email, password: password!, isNewUser: isNewUser!)
+        return User.Public(id: id, email: email, password: password!)
     }
     
     var transactions: Children<User, Transaction> {

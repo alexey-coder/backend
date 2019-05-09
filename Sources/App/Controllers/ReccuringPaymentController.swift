@@ -9,9 +9,13 @@ final class ReccuringPaymentController: RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenProtected = reccuringRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
-        tokenProtected.get(use: getAllHandler)
-        tokenProtected.post(use: createHendler)
-        tokenProtected.get(ReccuringPayment.parameter, "user", use: getAllHandler)
+//        tokenProtected.get(use: getAllHandler)
+//        tokenProtected.post(use: createHendler)
+//        tokenProtected.get(ReccuringPayment.parameter, "user", use: getAllHandler)
+        reccuringRoute.get(use: getAllHandler)
+        reccuringRoute.post(use: createHendler)
+        reccuringRoute.get(ReccuringPayment.parameter, "user", use: getAllHandler)
+        reccuringRoute.delete(ReccuringPayment.parameter, use: deleteHandler)
     }
     
     func createHendler(_ req: Request) throws -> Future<ReccuringPayment> {
@@ -28,6 +32,12 @@ final class ReccuringPaymentController: RouteCollection {
     func getUserHeandler(_ req: Request) throws -> Future<User.Public> {
         return try req.parameters.next(ReccuringPayment.self).flatMap(to: User.Public.self) { payment in
             return payment.user.get(on: req).toPublic()
+        }
+    }
+    
+    func deleteHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try req.parameters.next(ReccuringPayment.self).flatMap { reccuring in
+            return reccuring.delete(on: req).transform(to: HTTPStatus.noContent)
         }
     }
 }

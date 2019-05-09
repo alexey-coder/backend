@@ -5,7 +5,6 @@ final class ReccuringPayment: Codable {
     
     var id: Int?
     var customName: String
-    var periodicity: String
     var paymentDay: String
     var beneficiaryName: String
     var beneficiaryBank: String
@@ -18,7 +17,6 @@ final class ReccuringPayment: Codable {
     var accountID: Account.ID
     
     init(customName: String,
-        periodicity: String,
         paymentDay: String,
         beneficiaryName: String,
         beneficiaryBank: String,
@@ -31,7 +29,6 @@ final class ReccuringPayment: Codable {
         accountID: Account.ID)
     {
         self.customName = customName
-        self.periodicity = periodicity
         self.paymentDay = paymentDay
         self.beneficiaryName = beneficiaryName
         self.beneficiaryBank = beneficiaryBank

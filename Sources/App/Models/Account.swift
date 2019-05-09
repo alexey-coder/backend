@@ -25,16 +25,20 @@ extension Account {
         return parent(\.userID)
     }
 
-    var currency: Children<Account, Currency> {
-        return children(\.id)
+    var currency: Parent<Account, Currency> {
+        return parent(\.currencyID)
     }
     
     var recuuringPayment: Children<Account, ReccuringPayment> {
         return children(\.accountID)
     }
     
-    var card: Children<Account, CreditCard> {
-        return children(\CreditCard.id)
+    var creditCards: Children<Account, CreditCard> {
+        return children(\.accountID)
+    }
+    
+    var transactions: Children<Account, Transaction> {
+        return children(\.accountID)
     }
 }
 

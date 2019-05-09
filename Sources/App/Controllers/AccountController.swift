@@ -19,6 +19,7 @@ final class AccountController: RouteCollection {
         accountsRoute.post(use: createHeandler)
         accountsRoute.delete(Account.parameter, use: deleteHandler)
         accountsRoute.put(Account.parameter, use: updateHandler)
+        accountsRoute.get(Account.parameter, use: getTransactionsByAccId)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {
@@ -32,9 +33,21 @@ final class AccountController: RouteCollection {
         return Account.query(on: req).decode(Account.self).all()
     }
     
+//    func getUserHandler(_ req: Request) throws -> Future<User.Public> {
+//        return try req.parameters.next(Account.self).flatMap(to: User.Public.self) { account in
+//            return account.user.get(on: req).toPublic()
+//        }
+//    }
+    
     func getUserHandler(_ req: Request) throws -> Future<User.Public> {
         return try req.parameters.next(Account.self).flatMap(to: User.Public.self) { account in
             return account.user.get(on: req).toPublic()
+        }
+    }
+    
+    func getTransactionsByAccId(_ req: Request) throws -> Future<[Transaction]> {
+        return try req.parameters.next(Account.self).flatMap(to: [Transaction].self) { trans in
+            return try trans.transactions.query(on: req).all()
         }
     }
     

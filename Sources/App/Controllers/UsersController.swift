@@ -17,7 +17,6 @@ final class UsersController: RouteCollection {
         let tokenProtected = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(User.parameter, use: getOneHandler)
-        tokenProtected.put(User.parameter, use: updatePasswordHandler)
         tokenProtected.delete(User.parameter, use: deleteHandler)
 //        tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
 //        tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
@@ -36,28 +35,21 @@ final class UsersController: RouteCollection {
     func register(_ req: Request) throws -> Future<User.Public> {
         return try req.content.decode(User.self).flatMap { user in
             try user.validate()
-            let tempPass = try CryptoRandom().generateData(count: 4).base32EncodedString().lowercased()
-            
-            let hasher = try req.make(BCryptDigest.self)
-            let passwordHashed = try hasher.hash(tempPass)
-
-            let newUser = User(email: user.email, password: passwordHashed, surname: user.surname, dayOfBirth: user.dayOfBirth, cityOfBirth: user.cityOfBirth, countryOfBirth: user.countryOfBirth, postalCode: user.postalCode, postAddress: user.postAddress, postCity: user.postCity, postCountry: user.postCountry, phone: user.phone)
-            newUser.isNewUser = true
+            let tempPass = "111"
+            let newUser = User(email: user.email, password: tempPass, surname: user.surname, dayOfBirth: user.dayOfBirth, cityOfBirth: user.cityOfBirth, countryOfBirth: user.countryOfBirth, postalCode: user.postalCode, postAddress: user.postAddress, postCity: user.postCity, postCountry: user.postCountry, phone: user.phone)
+         
             return newUser.save(on: req).map { storedUser in
-                return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: tempPass , isNewUser: storedUser.isNewUser!)
+                return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: storedUser.password!)
             }
         }
     }
     
     func login(_ req: Request) throws -> Future<Token> {
-        return try req.content.decode(User.self).flatMap { user in
+        return try req.content.decode(User.Public.self).flatMap { user in
             return User.query(on: req).filter(\.email == user.email).first().flatMap { fetchedUser in
-                guard let existingUser = fetchedUser else {
-                    throw Abort(HTTPStatus.notFound)
-                }
+                guard let existingUser = fetchedUser else { throw Abort(HTTPStatus.notFound) }
                 
-                let hasher = try req.make(BCryptDigest.self)
-                if try hasher.verify(user.password!, created: existingUser.password!) {
+                if user.password == existingUser.password! {
                     return try Token
                         .query(on: req)
                         .filter(\Token.userID, .equal, existingUser.requireID())
@@ -91,16 +83,16 @@ final class UsersController: RouteCollection {
         return try req.parameters.next(User.self)
     }
     
-    func updatePasswordHandler(_ req: Request) throws -> Future<User.Public> {
-        return try flatMap(to: User.Public.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
-            let hasher = try req.make(BCryptDigest.self)
-            let passwordHashed = try hasher.hash(updatedUser.password!)
-            user.password = passwordHashed
-            return user.save(on: req).map { storedUser in
-                return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: passwordHashed , isNewUser: false)
-            }
-        }
-    }
+//    func updatePasswordHandler(_ req: Request) throws -> Future<User.Public> {
+//        return try flatMap(to: User.Public.self, req.parameters.next(User.self), req.content.decode(User.self)) { (user, updatedUser) in
+//            let hasher = try req.make(BCryptDigest.self)
+//            let passwordHashed = try hasher.hash(updatedUser.password!)
+//            user.password = passwordHashed
+//            return user.save(on: req).map { storedUser in
+//                return User.Public(id: try storedUser.requireID(), email: storedUser.email)
+//            }
+//        }
+//    }
     
     func deleteHandler(_ req: Request) throws -> Future<HTTPStatus> {
         return try req.parameters.next(User.self).flatMap { (user) in
@@ -113,6 +105,14 @@ final class UsersController: RouteCollection {
             return try user.transactions.query(on: req).all()
         }
     }
+//
+//    func getTransactionsByAccountHandler(_ req: Request) throws -> Future<[Transaction]> {
+//        return try req.parameters.next(User.self).flatMap(to: [Transaction].self) { (user) in
+//            return try user.transactions.query(on: req.parameters.next(Account.self).flatMap(to: [Transaction].self) { account in
+//                return try account.transactions.query(on: req).all()
+//            })
+//        }
+//    }
     
     func getCreditCardsHandler(_ req: Request) throws -> Future<[CreditCard]> {
         return try req.parameters.next(User.self).flatMap(to: [CreditCard].self) { user in
