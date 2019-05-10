@@ -26,6 +26,7 @@ final class UsersController: RouteCollection {
                 usersRoute.get(User.parameter, "creditcards", use: getCreditCardsHandler)
                 usersRoute.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
                 usersRoute.get(User.parameter, "accounts", use: getAccountsHeandler)
+            usersRoute.get(User.parameter, "test", use: getAccountsWithTransactions)
 
         tokenProtected.get("logout", use: logout)
         
@@ -117,6 +118,20 @@ final class UsersController: RouteCollection {
     func getCreditCardsHandler(_ req: Request) throws -> Future<[CreditCard]> {
         return try req.parameters.next(User.self).flatMap(to: [CreditCard].self) { user in
             return try user.creditCards.query(on: req).all()
+        }
+    }
+    
+    
+    func getAccountsWithTransactions(_ req: Request) throws -> Future<[AccountNested]> {
+        return try req.parameters.next(User.self).flatMap(to: [AccountNested].self) { users in
+            return try users.accounts.query(on: req).all().flatMap(to: [AccountNested].self) { accounts in
+                let accountsResponseFutures = try accounts.map { account in
+                    try account.transactions.query(on: req).all().map { transactions in
+                        return AccountNested(id: account.id!, customName: account.customName, transactions: transactions)
+                    }
+                }
+                return accountsResponseFutures.flatten(on: req)
+            }
         }
     }
     

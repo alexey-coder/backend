@@ -19,7 +19,7 @@ final class AccountController: RouteCollection {
         accountsRoute.post(use: createHeandler)
         accountsRoute.delete(Account.parameter, use: deleteHandler)
         accountsRoute.put(Account.parameter, use: updateHandler)
-        accountsRoute.get(use: getNestedResponseHeandler)
+        accountsRoute.get(Account.parameter, "user", use: getNestedResponseHeandler)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {
@@ -39,6 +39,7 @@ final class AccountController: RouteCollection {
         }
     }
     
+    
     func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountNested]> {
         return Account.query(on: req).all().flatMap { accounts in
             let accountsResponseFutures = try accounts.map { account in
@@ -49,6 +50,19 @@ final class AccountController: RouteCollection {
             return accountsResponseFutures.flatten(on: req)
         }
     }
+    
+
+
+    //    func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountNested]> {
+//        return Account.query(on: req).all().flatMap { accounts in
+//            let accountsResponseFutures = try accounts.map { account in
+//                try account.transactions.query(on: req).all().map { transactions in
+//                    return AccountNested(id: account.id!, customName: account.customName, transactions: transactions)
+//                }
+//            }
+//            return accountsResponseFutures.flatten(on: req)
+//        }
+//    }
     
     func updateHandler(_ req: Request) throws -> Future<Account> {
         return try flatMap(to: Account.self, req.parameters.next(Account.self), req.content.decode(Account.self)) { (account, updatedAccount) in
