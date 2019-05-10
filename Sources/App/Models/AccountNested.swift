@@ -8,18 +8,18 @@
 import Vapor
 import FluentPostgreSQL
 
-final class AccountNested: Codable {
+struct AccountNested: Codable {
     var id: Int?
     var customName: String
     var transactions: [Transaction]
     
-    init(customName: String, transactions: [Transaction]) {
+    init(id: Int, customName: String, transactions: [Transaction]) {
+        self.id = id
         self.customName = customName
         self.transactions = transactions
     }
 }
 
+extension AccountNested: Content {}
 extension AccountNested: PostgreSQLModel {}
 extension AccountNested: Migration {}
-extension AccountNested: Content {}
-extension AccountNested: Parameter {}
