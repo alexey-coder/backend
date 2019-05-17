@@ -10,11 +10,9 @@ final class TransactionController: RouteCollection {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenProtected = transactionRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
-        
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(Transaction.parameter, "user", use: getUserHandler)
-//        tokenProtected.post(use: createHandler)
-        transactionRoute.post(use: createHandler)
+        tokenProtected.post(use: createHandler)
     }
     
     func createHandler(_ req: Request) throws -> Future<Transaction> {

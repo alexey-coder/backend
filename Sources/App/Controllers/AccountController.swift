@@ -8,19 +8,12 @@ final class AccountController: RouteCollection {
         let guardAuthMiddleware = User.guardAuthMiddleware()
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenProtected = accountsRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
-        
-//        tokenProtected.get(use: getAllHandler)
-//        tokenProtected.get(Account.parameter, "user", use: getUserHandler)
-//        tokenProtected.post(use: createHeandler)
-//        tokenProtected.delete(Account.parameter, use: deleteHandler)
-//        tokenProtected.put(Account.parameter, use: updateHandler)
-//        accountsRoute.get(use: getAllHandler)
-//        accountsRoute.get(Account.parameter, "user", use: getUserHandler)
-        accountsRoute.post(use: createHeandler)
-        accountsRoute.delete(Account.parameter, use: deleteHandler)
-        accountsRoute.put(Account.parameter, use: updateHandler)
-        accountsRoute.get(Account.parameter, "user", use: getNestedResponseHeandler)
-        accountsRoute.get(Account.parameter, "transactions", use: getTransactionsByAccountId)
+
+        tokenProtected.post(use: createHeandler)
+        tokenProtected.delete(Account.parameter, use: deleteHandler)
+        tokenProtected.put(Account.parameter, use: updateHandler)
+        tokenProtected.get(Account.parameter, "user", use: getNestedResponseHeandler)
+        tokenProtected.get(Account.parameter, "transactions", use: getTransactionsByAccountId)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {

@@ -14,11 +14,10 @@ final class CurrencyController: RouteCollection {
     func boot(router: Router) throws {
         let currencyRoute = router.grouped("api", "currency")
         
-//        let guardAuthMiddleware = User.guardAuthMiddleware()
-//        let tokenAuthMiddleware = User.tokenAuthMiddleware()
-//        let tokenProtected = currencyRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
-//        tokenProtected.get(use: getAllHandler)
-        currencyRoute.get(use: getAllHandler)
+        let guardAuthMiddleware = User.guardAuthMiddleware()
+        let tokenAuthMiddleware = User.tokenAuthMiddleware()
+        let tokenProtected = currencyRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
+        tokenProtected.get(use: getAllHandler)
     }
     
     func getAllHandler(_ req: Request) throws -> Future<[Currency]> {

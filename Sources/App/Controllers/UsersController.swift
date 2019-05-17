@@ -18,21 +18,15 @@ final class UsersController: RouteCollection {
         tokenProtected.get(use: getAllHandler)
         tokenProtected.get(User.parameter, use: getOneHandler)
         tokenProtected.delete(User.parameter, use: deleteHandler)
-//        tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
-//        tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
-//        tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
-//        tokenProtected.get(User.parameter, "accounts", use: getAccountsHeandler)
-                usersRoute.get(User.parameter, "transactions", use: getTransactionsHandler)
-                usersRoute.get(User.parameter, "creditcards", use: getCreditCardsHandler)
-                usersRoute.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
-                usersRoute.get(User.parameter, "accounts", use: getAccountsHeandler)
-            usersRoute.get(User.parameter, "accountTransactions", use: getAccountsWithTransactions)
-        usersRoute.get(User.parameter, "accountCreditcards", use: getAccountsWithCreditCards)
-        usersRoute.get(User.parameter, "creditcardsAccount", use: getCreditCardsWithAccounts)
-
+        tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
+        tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
+        tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
+        tokenProtected.get(User.parameter, "accounts", use: getAccountsHeandler)
+        tokenProtected.get(User.parameter, "accountTransactions", use: getAccountsWithTransactions)
+        tokenProtected.get(User.parameter, "accountCreditcards", use: getAccountsWithCreditCards)
+        tokenProtected.get(User.parameter, "creditcardsAccount", use: getCreditCardsWithAccounts)
         tokenProtected.get("logout", use: logout)
-        
-         usersRoute.post(User.parameter, "avatar", use: uploadUser) //protect it
+        tokenProtected.post(User.parameter, "avatar", use: uploadUser)
     }
     
     func register(_ req: Request) throws -> Future<User.Public> {

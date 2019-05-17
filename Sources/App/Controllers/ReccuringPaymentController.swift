@@ -9,13 +9,10 @@ final class ReccuringPaymentController: RouteCollection {
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
         let tokenProtected = reccuringRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
-//        tokenProtected.get(use: getAllHandler)
-//        tokenProtected.post(use: createHendler)
-//        tokenProtected.get(ReccuringPayment.parameter, "user", use: getAllHandler)
-        reccuringRoute.get(use: getAllHandler)
-        reccuringRoute.post(use: createHendler)
-        reccuringRoute.get(ReccuringPayment.parameter, "user", use: getAllHandler)
-        reccuringRoute.delete(ReccuringPayment.parameter, use: deleteHandler)
+        tokenProtected.get(use: getAllHandler)
+        tokenProtected.post(use: createHendler)
+        tokenProtected.get(ReccuringPayment.parameter, "user", use: getAllHandler)
+        tokenProtected.delete(ReccuringPayment.parameter, use: deleteHandler)
     }
     
     func createHendler(_ req: Request) throws -> Future<ReccuringPayment> {
