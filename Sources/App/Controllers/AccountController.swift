@@ -12,7 +12,7 @@ final class AccountController: RouteCollection {
         tokenProtected.post(use: createHeandler)
         tokenProtected.delete(Account.parameter, use: deleteHandler)
         tokenProtected.put(Account.parameter, use: updateHandler)
-        tokenProtected.get(Account.parameter, "user", use: getNestedResponseHeandler)
+//        tokenProtected.get(Account.parameter, "user", use: getNestedResponseHeandler)
         tokenProtected.get(Account.parameter, "transactions", use: getTransactionsByAccountId)
     }
     
@@ -33,16 +33,16 @@ final class AccountController: RouteCollection {
         }
     }
     
-        func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountWithNestedTransactions]> {
-            return Account.query(on: req).all().flatMap { accounts in
-                let accountsResponseFutures = try accounts.map { account in
-                    try account.transactions.query(on: req).all().map { transactions in
-                        return AccountWithNestedTransactions(id: account.id!, customName: account.customName, transactions: transactions)
-                    }
-                }
-                return accountsResponseFutures.flatten(on: req)
-            }
-        }
+//        func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountWithNestedTransactions]> {
+//            return Account.query(on: req).all().flatMap { accounts in
+//                let accountsResponseFutures = try accounts.map { account in
+//                    try account.transactions.query(on: req).all().map { transactions in
+//                        return AccountWithNestedTransactions(id: account.id!, customName: account.customName, transactions: transactions)
+//                    }
+//                }
+//                return accountsResponseFutures.flatten(on: req)
+//            }
+//        }
     
     
 //    func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountNested]> {
