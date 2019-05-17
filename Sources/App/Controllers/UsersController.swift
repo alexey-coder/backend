@@ -34,8 +34,12 @@ final class UsersController: RouteCollection {
             try user.validate()
             let tempPass = "111"
             let newUser = User(email: user.email, password: tempPass, surname: user.surname, dayOfBirth: user.dayOfBirth, cityOfBirth: user.cityOfBirth, countryOfBirth: user.countryOfBirth, postalCode: user.postalCode, postAddress: user.postAddress, postCity: user.postCity, postCountry: user.postCountry, phone: user.phone)
-         
+            
             return newUser.save(on: req).map { storedUser in
+                
+                //create default money account
+                let newAccount = Account(customName: "default", userID: newUser.id!, currencyID: 1)
+                newAccount.save(on: req)
                 return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: storedUser.password!)
             }
         }
@@ -117,14 +121,12 @@ final class UsersController: RouteCollection {
         }
     }
     
-    
     func getAccountsWithTransactions(_ req: Request) throws -> Future<[AccountWithNestedTransactions]> {
         return try req.parameters.next(User.self).flatMap(to: [AccountWithNestedTransactions].self) { users in
             return try users.accounts.query(on: req).all().flatMap(to: [AccountWithNestedTransactions].self) { accounts in
                 let accountsResponseFutures = try accounts.map { account in
                     try account.transactions.query(on: req).all().map { transactions in
                         return AccountWithNestedTransactions(id: account.id!, customName: account.customName, transactions: transactions)
-                        
                     }
                 }
                 return accountsResponseFutures.flatten(on: req)
