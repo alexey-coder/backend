@@ -17,6 +17,7 @@ final class TransactionController: RouteCollection {
     
     func createHandler(_ req: Request) throws -> Future<Transaction> {
         return try req.content.decode(Transaction.self).flatMap { (transaction) in
+            transaction.date = Date()
             return transaction.save(on: req)
         }
     }

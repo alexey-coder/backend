@@ -18,6 +18,11 @@ final class CreditCardController: RouteCollection {
     func createHeandler(_ req: Request) throws -> Future<CreditCard> {
         return try req.content.decode(CreditCard.self).flatMap {
             creditCard in
+            var creditNumber = ""
+            for _ in 0...22 {
+                creditNumber += String(Int.random(in: 0...9))
+            }
+            creditCard.cardNumber = creditNumber
             return creditCard.save(on: req)
         }
     }

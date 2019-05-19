@@ -21,8 +21,7 @@ final class UsersController: RouteCollection {
         tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
         tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
         tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
-        tokenProtected.get(User.parameter, "accounts", use: getAccountsHeandler)
-        tokenProtected.get(User.parameter, "accountTransactions", use: getAccountsWithTransactions)
+        tokenProtected.get(User.parameter, "accounts", use: getAccounts)
         tokenProtected.get(User.parameter, "accountCreditcards", use: getAccountsWithCreditCards)
         tokenProtected.get(User.parameter, "creditcardsAccount", use: getCreditCardsWithAccounts)
         tokenProtected.get("logout", use: logout)
@@ -34,11 +33,15 @@ final class UsersController: RouteCollection {
             try user.validate()
             let tempPass = "111"
             let newUser = User(email: user.email, password: tempPass, surname: user.surname, dayOfBirth: user.dayOfBirth, cityOfBirth: user.cityOfBirth, countryOfBirth: user.countryOfBirth, postalCode: user.postalCode, postAddress: user.postAddress, postCity: user.postCity, postCountry: user.postCountry, phone: user.phone)
-            
             return newUser.save(on: req).map { storedUser in
-                
                 //create default money account
                 let newAccount = Account(customName: "default", userID: newUser.id!, currencyID: 1)
+                newAccount.balance = 0.0
+                var accNumber = ""
+                for _ in 0...22 {
+                    accNumber += String(Int.random(in: 0...9))
+                }
+                newAccount.accountNumber = accNumber
                 newAccount.save(on: req)
                 return User.Public(id: try storedUser.requireID(), email: storedUser.email, password: storedUser.password!)
             }
@@ -49,7 +52,6 @@ final class UsersController: RouteCollection {
         return try req.content.decode(User.Public.self).flatMap { user in
             return User.query(on: req).filter(\.email == user.email).first().flatMap { fetchedUser in
                 guard let existingUser = fetchedUser else { throw Abort(HTTPStatus.notFound) }
-                
                 if user.password == existingUser.password! {
                     return try Token
                         .query(on: req)
@@ -106,14 +108,6 @@ final class UsersController: RouteCollection {
             return try user.transactions.query(on: req).all()
         }
     }
-//
-//    func getTransactionsByAccountHandler(_ req: Request) throws -> Future<[Transaction]> {
-//        return try req.parameters.next(User.self).flatMap(to: [Transaction].self) { (user) in
-//            return try user.transactions.query(on: req.parameters.next(Account.self).flatMap(to: [Transaction].self) { account in
-//                return try account.transactions.query(on: req).all()
-//            })
-//        }
-//    }
     
     func getCreditCardsHandler(_ req: Request) throws -> Future<[CreditCard]> {
         return try req.parameters.next(User.self).flatMap(to: [CreditCard].self) { user in
@@ -121,13 +115,13 @@ final class UsersController: RouteCollection {
         }
     }
     
-    func getAccountsWithTransactions(_ req: Request) throws -> Future<[AccountWithNestedTransactions]> {
-        return try req.parameters.next(User.self).flatMap(to: [AccountWithNestedTransactions].self) { users in
-            return try users.accounts.query(on: req).all().flatMap(to: [AccountWithNestedTransactions].self) { accounts in
+    func getAccounts(_ req: Request) throws -> Future<[AccountWithNested]> {
+        return try req.parameters.next(User.self).flatMap(to: [AccountWithNested].self) { users in
+            return try users.accounts.query(on: req).all().flatMap(to: [AccountWithNested].self) { accounts in
                 let shit = try accounts.map { account in
                     try account.transactions.query(on: req).all().flatMap { transactions in
                         try account.creditCards.query(on: req).all().map { credit in
-                            return AccountWithNestedTransactions(id: account.id!, customName: account.customName, transactions: transactions, creditCards: credit )
+                            return AccountWithNested(id: account.id!, customName: account.customName, transactions: transactions, creditCards: credit, balance: account.balance!, accountNumber: account.accountNumber! )
                         }
                     }
                 }

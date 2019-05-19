@@ -12,13 +12,18 @@ final class AccountController: RouteCollection {
         tokenProtected.post(use: createHeandler)
         tokenProtected.delete(Account.parameter, use: deleteHandler)
         tokenProtected.put(Account.parameter, use: updateHandler)
-//        tokenProtected.get(Account.parameter, "user", use: getNestedResponseHeandler)
         tokenProtected.get(Account.parameter, "transactions", use: getTransactionsByAccountId)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {
         return try req.content.decode(Account.self).flatMap {
             account in
+            account.balance = 0.0
+            var accNumber = ""
+            for _ in 0...22 {
+               accNumber += String(Int.random(in: 0...9))
+            }
+            account.accountNumber = accNumber
             return account.save(on: req)
         }
     }
@@ -32,29 +37,6 @@ final class AccountController: RouteCollection {
             return account.user.get(on: req).toPublic()
         }
     }
-    
-//        func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountWithNestedTransactions]> {
-//            return Account.query(on: req).all().flatMap { accounts in
-//                let accountsResponseFutures = try accounts.map { account in
-//                    try account.transactions.query(on: req).all().map { transactions in
-//                        return AccountWithNestedTransactions(id: account.id!, customName: account.customName, transactions: transactions)
-//                    }
-//                }
-//                return accountsResponseFutures.flatten(on: req)
-//            }
-//        }
-    
-    
-//    func getNestedResponseHeandler(_ req: Request) throws -> Future<[AccountNested]> {
-//        return Account.query(on: req).all().flatMap { accounts in
-//            let accountsResponseFutures = try accounts.map { account in
-//                try account.transactions.query(on: req).all().map { transactions in
-//                    return AccountNested(id: account.id!, customName: account.customName, transactions: transactions)
-//                }
-//            }
-//            return accountsResponseFutures.flatten(on: req)
-//        }
-//    }
     
     func getTransactionsByAccountId(_ req: Request) throws -> Future<[Transaction]> {
         return try req.parameters.next(Account.self).flatMap(to: [Transaction].self) { trans in

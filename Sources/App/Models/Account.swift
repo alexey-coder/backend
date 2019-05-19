@@ -8,6 +8,8 @@ final class Account: Codable {
     var customName: String
     var userID: User.ID
     var currencyID: Currency.ID
+    var balance: Double?
+    var accountNumber: String?
     
     init(customName: String, userID: User.ID, currencyID: Currency.ID) {
         self.customName = customName

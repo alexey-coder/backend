@@ -8,6 +8,7 @@ final class Transaction: Codable {
     var amount: Int
     var userID: User.ID
     var accountID: Account.ID
+    var date: Date?
 
     init(iban: String, amount: Int, userID: User.ID, accountID: Account.ID) {
         self.iban = iban
