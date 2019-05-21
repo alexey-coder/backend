@@ -51,10 +51,10 @@ extension ReccuringPayment {
         return parent(\.userID)
     }
     
-    var periodicy: Children<ReccuringPayment, Periodicity> {
-        return children(\Periodicity.id)
-    }
-    
+//    var periodicy: Children<ReccuringPayment, Periodicity> {
+//        return children(\Periodicity.id)
+//    }
+//    
     var userFoundsFrom: Parent<ReccuringPayment, Account> {
         return parent(\.accountID)
     }
