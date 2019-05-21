@@ -13,7 +13,7 @@ final class ReccuringPayment: Codable {
     var amount: Int
     var reasonForPayment: String
     var userID: User.ID
-    var periodicityID: Periodicity.ID
+    var periodicity: String
     var accountID: Account.ID
     
     init(customName: String,
@@ -25,7 +25,7 @@ final class ReccuringPayment: Codable {
         amount: Int,
         reasonForPayment: String,
         userID: User.ID,
-        periodicityID: Periodicity.ID,
+        periodicity: String,
         accountID: Account.ID)
     {
         self.customName = customName
@@ -37,7 +37,7 @@ final class ReccuringPayment: Codable {
         self.amount = amount
         self.reasonForPayment = reasonForPayment
         self.userID = userID
-        self.periodicityID = periodicityID
+        self.periodicity = periodicity
         self.accountID = accountID
     }
 }
