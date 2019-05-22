@@ -13,6 +13,7 @@ final class AccountController: RouteCollection {
         tokenProtected.delete(Account.parameter, use: deleteHandler)
         tokenProtected.put(Account.parameter, use: updateHandler)
         tokenProtected.get(Account.parameter, "transactions", use: getTransactionsByAccountId)
+        tokenProtected.get(Account.parameter, use: getAccountById)
     }
     
     func createHeandler(_ req: Request) throws -> Future<Account> {
@@ -30,6 +31,10 @@ final class AccountController: RouteCollection {
     
     func getAllHandler(_ req: Request) throws -> Future<[Account]> {
         return Account.query(on: req).decode(Account.self).all()
+    }
+    
+    func getAccountById(_ req: Request) throws -> Future<Account> {
+        return try req.parameters.next(Account.self)
     }
     
     func getUserHandler(_ req: Request) throws -> Future<User.Public> {
