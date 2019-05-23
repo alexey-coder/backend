@@ -33,8 +33,12 @@ final class AccountController: RouteCollection {
         return Account.query(on: req).decode(Account.self).all()
     }
     
-    func getAccountById(_ req: Request) throws -> Future<Account> {
-        return try req.parameters.next(Account.self)
+    func getAccountById(_ req: Request) throws -> Future<AccountsWithNestedCreditCards> {
+        return try req.parameters.next(Account.self).flatMap(to: AccountsWithNestedCreditCards.self) { accs in
+            return try accs.creditCards.query(on: req).all().map(to: AccountsWithNestedCreditCards.self) { credits in
+                return AccountsWithNestedCreditCards(id: accs.id!, customName: accs.customName, creditCards: credits, balance: accs.balance!, accountNumber: accs.accountNumber!)
+            }
+        }
     }
     
     func getUserHandler(_ req: Request) throws -> Future<User.Public> {
