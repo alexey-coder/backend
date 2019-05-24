@@ -107,14 +107,16 @@ final class UsersController: RouteCollection {
     func getAccounts(_ req: Request) throws -> Future<[AccountWithNested]> {
         return try req.parameters.next(User.self).flatMap(to: [AccountWithNested].self) { users in
             return try users.accounts.query(on: req).all().flatMap(to: [AccountWithNested].self) { accounts in
-                let shit = try accounts.map { account in
+                let resp = try accounts.map { account in
                     try account.transactions.query(on: req).all().flatMap { transactions in
-                        try account.creditCards.query(on: req).all().map { credit in
-                            return AccountWithNested(id: account.id!, customName: account.customName, transactions: transactions, creditCards: credit, balance: account.balance!, accountNumber: account.accountNumber! )
+                        try account.creditCards.query(on: req).all().flatMap { credit in
+                             account.currency.query(on: req).all().map { currency in
+                                return AccountWithNested(id: account.id!, customName: account.customName, transactions: transactions, creditCards: credit, balance: account.balance!, accountNumber: account.accountNumber!, currency: currency)
+                            }
                         }
                     }
                 }
-                return shit.flatten(on: req)
+                return resp.flatten(on: req)
             }
         }
     }
