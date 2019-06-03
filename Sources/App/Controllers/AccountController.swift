@@ -33,10 +33,22 @@ final class AccountController: RouteCollection {
         return Account.query(on: req).decode(Account.self).all()
     }
     
-    func getAccountById(_ req: Request) throws -> Future<AccountsWithNestedCreditCards> {
-        return try req.parameters.next(Account.self).flatMap(to: AccountsWithNestedCreditCards.self) { accs in
-            return try accs.creditCards.query(on: req).all().map(to: AccountsWithNestedCreditCards.self) { credits in
-                return AccountsWithNestedCreditCards(id: accs.id!, customName: accs.customName, creditCards: credits, balance: accs.balance!, accountNumber: accs.accountNumber!)
+//    func getAccountById(_ req: Request) throws -> Future<AccountsWithNestedCreditCards> {
+//        return try req.parameters.next(Account.self).flatMap(to: AccountsWithNestedCreditCards.self) { accs in
+//            return try accs.creditCards.query(on: req).all().map(to: AccountsWithNestedCreditCards.self) { credits in
+//                return AccountsWithNestedCreditCards(id: accs.id!, customName: accs.customName, creditCards: credits, balance: accs.balance!, accountNumber: accs.accountNumber!)
+//            }
+//        }
+//    }
+    
+    func getAccountById(_ req: Request) throws -> Future<AccountWithNested> {
+        return try req.parameters.next(Account.self).flatMap(to: AccountWithNested.self) { accs in
+            return try accs.creditCards.query(on: req).all().flatMap(to: AccountWithNested.self) { credits in
+                return try accs.currency.query(on: req).all().flatMap(to: AccountWithNested.self) { currency in
+                    return try accs.transactions.query(on: req).all().map(to: AccountWithNested.self) { transactions in
+                        return AccountWithNested(id: accs.id!, customName: accs.customName, transactions: transactions, creditCards: credits, balance: accs.balance!, accountNumber: accs.accountNumber!, currency: currency)
+                    }
+                }
             }
         }
     }
