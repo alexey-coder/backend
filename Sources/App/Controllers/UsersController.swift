@@ -38,7 +38,7 @@ final class UsersController: RouteCollection {
                 let newAccount = Account(customName: "default", userID: newUser.id!, currencyID: 1)
                 newAccount.balance = 0.0
                 var accNumber = ""
-                for _ in 0...22 {
+                for _ in 0...21 {
                     accNumber += String(Int.random(in: 0...9))
                 }
                 newAccount.accountNumber = accNumber
