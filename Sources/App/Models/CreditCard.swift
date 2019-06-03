@@ -12,7 +12,8 @@ final class CreditCard: Codable {
     var accountID: Account.ID
     var cardNumber: String?
     
-    init(postalCode: String, address: String, city: String, country: String, userID: User.ID, accountID: Account.ID) {
+    init(id: Int, postalCode: String, address: String, city: String, country: String, userID: User.ID, accountID: Account.ID) {
+        self.id = id
         self.postalCode = postalCode
         self.address = address
         self.city = city

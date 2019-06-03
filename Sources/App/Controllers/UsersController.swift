@@ -20,7 +20,7 @@ final class UsersController: RouteCollection {
         tokenProtected.delete(User.parameter, use: deleteHandler)
         tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
         tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
-        tokenProtected.get(User.parameter, "reccuring", use: getCreditReccuringPaymentsHandler)
+        tokenProtected.get(User.parameter, "reccuring", use: getReccuringPaymentsHandler)
         tokenProtected.get(User.parameter, "accounts", use: getAccounts)
         tokenProtected.get(User.parameter, "accountCreditcards", use: getAccountsWithCreditCards)
         tokenProtected.get(User.parameter, "creditcardsAccount", use: getCreditCardsWithAccounts)
@@ -147,9 +147,16 @@ final class UsersController: RouteCollection {
         }
     }
     
-    func getCreditReccuringPaymentsHandler(_ req: Request) throws -> Future<[ReccuringPayment]> {
-        return try req.parameters.next(User.self).flatMap(to: [ReccuringPayment].self) { user in
-            return try user.reccuringPayments.query(on: req).all()
+    func getReccuringPaymentsHandler(_ req: Request) throws -> Future<[ReccuringPaymentWithAccount]> {
+        return try req.parameters.next(User.self).flatMap(to: [ReccuringPaymentWithAccount].self) { users in
+            return try users.reccuringPayments.query(on: req).all().flatMap(to: [ReccuringPaymentWithAccount].self) { payments in
+                let resp = payments.map { pay in
+                    pay.userFoundsFrom.query(on: req).all().map { acc in
+                        return ReccuringPaymentWithAccount(id: pay.id!, customName: pay.customName, paymentDay: pay.paymentDay, beneficiaryName: pay.beneficiaryName, beneficiaryBank: pay.beneficiaryBank, beneficiaryBic: pay.beneficiaryBic, iban: pay.iban, amount: pay.amount, reasonForPayment: pay.reasonForPayment, userID: pay.userID, periodicity: pay.periodicity, accountID: pay.accountID, account: acc)
+                    }
+                }
+                return resp.flatten(on: req)
+            }
         }
     }
     

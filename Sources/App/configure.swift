@@ -33,7 +33,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
             transport: .cleartext)
     }
     
-    
     let postgres = PostgreSQLDatabase(config: databaseConfig)
     databases.add(database: postgres, as: .psql)
     services.register(databases)
