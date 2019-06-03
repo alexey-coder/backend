@@ -21,7 +21,7 @@ final class AccountController: RouteCollection {
             account in
             account.balance = 0.0
             var accNumber = ""
-            for _ in 0...22 {
+            for _ in 0...21 {
                accNumber += String(Int.random(in: 0...9))
             }
             account.accountNumber = accNumber

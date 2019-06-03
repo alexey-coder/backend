@@ -19,7 +19,7 @@ final class CreditCardController: RouteCollection {
         return try req.content.decode(CreditCard.self).flatMap {
             creditCard in
             var creditNumber = ""
-            for _ in 0...16 {
+            for _ in 0...15 {
                 creditNumber += String(Int.random(in: 0...9))
             }
             creditCard.cardNumber = creditNumber
