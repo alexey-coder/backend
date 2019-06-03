@@ -45,8 +45,10 @@ final class AccountController: RouteCollection {
         return try req.parameters.next(Account.self).flatMap(to: AccountWithNested.self) { accs in
             return try accs.creditCards.query(on: req).all().flatMap(to: AccountWithNested.self) { credits in
                 return try accs.currency.query(on: req).all().flatMap(to: AccountWithNested.self) { currency in
-                    return try accs.transactions.query(on: req).all().map(to: AccountWithNested.self) { transactions in
-                        return AccountWithNested(id: accs.id!, customName: accs.customName, transactions: transactions, creditCards: credits, balance: accs.balance!, accountNumber: accs.accountNumber!, currency: currency)
+                    return try accs.transactions.query(on: req).all().flatMap(to: AccountWithNested.self) { transactions in
+                        return try accs.recuuringPayment.query(on: req).all().map(to: AccountWithNested.self) { rec in
+                            return AccountWithNested(id: accs.id!, customName: accs.customName, transactions: transactions, creditCards: credits, balance: accs.balance!, accountNumber: accs.accountNumber!, currency: currency, reccuring: rec)
+                        }
                     }
                 }
             }

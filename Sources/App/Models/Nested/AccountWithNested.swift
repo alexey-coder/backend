@@ -14,10 +14,11 @@ struct AccountWithNested: Codable {
     var transactions: [Transaction]
     var creditCards: [CreditCard]
     var currency: [Currency]
+    var reccuring: [ReccuringPayment]
     var balance: Double
     var accountNumber: String
     
-    init(id: Int, customName: String, transactions: [Transaction], creditCards: [CreditCard], balance: Double, accountNumber: String, currency: [Currency]) {
+    init(id: Int, customName: String, transactions: [Transaction], creditCards: [CreditCard], balance: Double, accountNumber: String, currency: [Currency], reccuring: [ReccuringPayment]) {
         self.id = id
         self.customName = customName
         self.transactions = transactions
@@ -25,6 +26,7 @@ struct AccountWithNested: Codable {
         self.balance = balance
         self.accountNumber = accountNumber
         self.currency = currency
+        self.reccuring = reccuring
     }
 }
 

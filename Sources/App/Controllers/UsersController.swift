@@ -110,8 +110,10 @@ final class UsersController: RouteCollection {
                 let resp = try accounts.map { account in
                     try account.transactions.query(on: req).all().flatMap { transactions in
                         try account.creditCards.query(on: req).all().flatMap { credit in
-                             account.currency.query(on: req).all().map { currency in
-                                return AccountWithNested(id: account.id!, customName: account.customName, transactions: transactions, creditCards: credit, balance: account.balance!, accountNumber: account.accountNumber!, currency: currency)
+                            try account.currency.query(on: req).all().flatMap { currency in
+                                try account.recuuringPayment.query(on: req).all().map { rec in
+                                    return AccountWithNested(id: account.id!, customName: account.customName, transactions: transactions, creditCards: credit, balance: account.balance!, accountNumber: account.accountNumber!, currency: currency, reccuring: rec)
+                                }
                             }
                         }
                     }
@@ -120,6 +122,20 @@ final class UsersController: RouteCollection {
             }
         }
     }
+    
+//    func getReccuringPaymentsHandler(_ req: Request) throws -> Future<[ReccuringPaymentWithAccount]> {
+//        return try req.parameters.next(User.self).flatMap(to: [ReccuringPaymentWithAccount].self) { users in
+//            return try users.reccuringPayments.query(on: req).all().flatMap(to: [ReccuringPaymentWithAccount].self) { payments in
+//                let resp = payments.map { pay in
+//                    pay.userFoundsFrom.query(on: req).all().map { acc in
+//
+//                        return ReccuringPaymentWithAccount(id: pay.id!, customName: pay.customName, paymentDay: pay.paymentDay, beneficiaryName: pay.beneficiaryName, beneficiaryBank: pay.beneficiaryBank, beneficiaryBic: pay.beneficiaryBic, iban: pay.iban, amount: pay.amount, reasonForPayment: pay.reasonForPayment, userID: pay.userID, periodicity: pay.periodicity, accountID: pay.accountID, account: acc)
+//                    }
+//                }
+//                return resp.flatten(on: req)
+//            }
+//        }
+//    }
     
     func getAccountsWithCreditCards(_ req: Request) throws -> Future<[AccountsWithNestedCreditCards]> {
         return try req.parameters.next(User.self).flatMap(to: [AccountsWithNestedCreditCards].self) { users in
@@ -143,19 +159,6 @@ final class UsersController: RouteCollection {
                     }
                 }
                 return creditsResponseFutures.flatten(on: req)
-            }
-        }
-    }
-    
-    func getReccuringPaymentsHandler(_ req: Request) throws -> Future<[ReccuringPaymentWithAccount]> {
-        return try req.parameters.next(User.self).flatMap(to: [ReccuringPaymentWithAccount].self) { users in
-            return try users.reccuringPayments.query(on: req).all().flatMap(to: [ReccuringPaymentWithAccount].self) { payments in
-                let resp = payments.map { pay in
-                    pay.userFoundsFrom.query(on: req).all().map { acc in
-                        return ReccuringPaymentWithAccount(id: pay.id!, customName: pay.customName, paymentDay: pay.paymentDay, beneficiaryName: pay.beneficiaryName, beneficiaryBank: pay.beneficiaryBank, beneficiaryBic: pay.beneficiaryBic, iban: pay.iban, amount: pay.amount, reasonForPayment: pay.reasonForPayment, userID: pay.userID, periodicity: pay.periodicity, accountID: pay.accountID, account: acc)
-                    }
-                }
-                return resp.flatten(on: req)
             }
         }
     }
