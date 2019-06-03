@@ -20,7 +20,7 @@ final class UsersController: RouteCollection {
         tokenProtected.delete(User.parameter, use: deleteHandler)
         tokenProtected.get(User.parameter, "transactions", use: getTransactionsHandler)
         tokenProtected.get(User.parameter, "creditcards", use: getCreditCardsHandler)
-        tokenProtected.get(User.parameter, "reccuring", use: getReccuringPaymentsHandler)
+//        tokenProtected.get(User.parameter, "reccuring", use: getReccuringPaymentsHandler)
         tokenProtected.get(User.parameter, "accounts", use: getAccounts)
         tokenProtected.get(User.parameter, "accountCreditcards", use: getAccountsWithCreditCards)
         tokenProtected.get(User.parameter, "creditcardsAccount", use: getCreditCardsWithAccounts)
