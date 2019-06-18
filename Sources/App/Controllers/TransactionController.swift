@@ -18,6 +18,12 @@ final class TransactionController: RouteCollection {
     func createHandler(_ req: Request) throws -> Future<Transaction> {
         return try req.content.decode(Transaction.self).flatMap { (transaction) in
             transaction.date = Date()
+            let categoryList = ["bank transfer", "grocery"]
+            let percentageList = [70, 20, 5, 10]
+            let shopList = ["Tesco","McDonalds","Adidas","WallMart"]
+            transaction.category = categoryList.randomElement()!
+            transaction.percentage = percentageList.randomElement()!
+            transaction.shopName = shopList.randomElement()!
             return transaction.save(on: req)
         }
     }
